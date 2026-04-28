@@ -1,0 +1,163 @@
+╔══════════════════════════════════════════════════════════════╗
+║     DAY 15 — RAILWAY DEPLOYMENT GUIDE (FREE)                ║
+╚══════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — GitHub pe push karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  git init
+  git add .
+  git commit -m "Initial ecommerce API"
+  git branch -M main
+  git remote add origin https://github.com/yourusername/ecommerce-api.git
+  git push -u origin main
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — Railway account banao
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. railway.app pe jao
+  2. GitHub se login karo
+  3. "New Project" → "Deploy from GitHub repo"
+  4. Apna ecommerce-api repo select karo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — PostgreSQL add karo (free)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Railway dashboard mein:
+  1. "New" → "Database" → "PostgreSQL"
+  2. Connect karega automatically
+  3. DATABASE_URL automatically milega
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — Environment variables set karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Railway Dashboard → Your Service → Variables tab → Add:
+
+  SECRET_KEY                = (random 50 chars - python -c "import secrets; print(secrets.token_urlsafe(50))")
+  DJANGO_SETTINGS_MODULE    = jwtproject.settings.production
+  ALLOWED_HOSTS             = yourapp.railway.app
+  CORS_ALLOWED_ORIGINS      = https://yourfrontend.vercel.app
+  EMAIL_HOST_USER           = your@brevo-email.com
+  EMAIL_HOST_PASSWORD       = your-brevo-smtp-password
+  RAZORPAY_KEY_ID           = rzp_live_xxxx
+  RAZORPAY_KEY_SECRET       = your-secret
+  RAZORPAY_WEBHOOK_SECRET   = your-webhook-secret
+  GOOGLE_OAUTH2_CLIENT_ID   = your-google-client-id
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — Deploy!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Railway automatically:
+  1. Code build karega
+  2. python manage.py migrate chalayega
+  3. python manage.py collectstatic chalayega
+  4. Gunicorn server start karega
+
+  Aapka API live ho jayega:
+  https://yourapp.railway.app/api/docs/
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6 — Superuser banao (ek baar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Railway Dashboard → Your Service → Shell tab:
+  python manage.py createsuperuser
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7 — Razorpay Webhook set karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. razorpay.com → Settings → Webhooks
+  2. Add URL: https://yourapp.railway.app/api/payments/webhook/
+  3. Events select karo: payment.captured, payment.failed
+  4. Secret set karo (same as RAZORPAY_WEBHOOK_SECRET env var)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 8 — GitHub Actions CI/CD setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. Railway Dashboard → Account → Tokens → Create Token
+  2. GitHub repo → Settings → Secrets → New secret:
+     Name: RAILWAY_TOKEN
+     Value: (railway token paste karo)
+  3. Ab har main branch push pe auto-deploy hoga!
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 9 — Test karo (Postman)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  POST https://yourapp.railway.app/api/register/
+  POST https://yourapp.railway.app/api/login/
+  GET  https://yourapp.railway.app/api/docs/      ← Swagger UI
+  GET  https://yourapp.railway.app/admin/          ← Django Admin
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FREE TIER LIMITS (Railway)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  $5 free credit/month — chote traffic ke liye kaafi hai
+  PostgreSQL: 1GB free
+  Sleep mode: 30 min inactivity pe — UptimeRobot se ping karo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+UPTIME ROBOT SETUP (Free - server sleep na ho)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. uptimerobot.com pe free account banao
+  2. Add Monitor → HTTP(s)
+  3. URL: https://yourapp.railway.app/api/schema/
+  4. Interval: 5 minutes
+  5. Done! Server kabhi sleep nahi karega.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMON DEPLOYMENT ERRORS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Error: "DisallowedHost"
+Fix:   ALLOWED_HOSTS mein yourapp.railway.app add karo
+
+Error: "relation does not exist"
+Fix:   python manage.py migrate Railway shell mein chalao
+
+Error: Static files 404
+Fix:   INSTALLED_APPS mein whitenoise check karo, collectstatic chalao
+
+Error: "Module not found: razorpay"
+Fix:   requirements.txt mein razorpay>=1.4 hai confirm karo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎉 PROJECT COMPLETE! 15 DAYS MEIN PRODUCTION API READY!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Total:
+  ✅ Day 1-3:  Auth (JWT + Google + OTP + Roles + Address)
+  ✅ Day 4-5:  Products (Catalog + Search + Filters + Variants)
+  ✅ Day 6:    Cart (Cart + Wishlist + Coupons)
+  ✅ Day 7:    Orders (Place + Track + Cancel + Return)
+  ✅ Day 8:    Payments (Razorpay + Webhook + Refund)
+  ✅ Day 10:   Reviews (Verified Purchase + Votes + Ratings)
+  ✅ Day 11-12: Analytics (Revenue + Top Products + Low Stock)
+  ✅ Day 13:   Integration Tests (75%+ coverage)
+  ✅ Day 14:   Swagger API Docs (auto-generated)
+  ✅ Day 15:   Railway Deploy + GitHub Actions CI/CD
+
+Apps:      6 (jwtapp, products, cart, orders, payments, reviews)
+Endpoints: 75+
+DB Tables: 20+

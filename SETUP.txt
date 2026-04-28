@@ -1,0 +1,136 @@
+╔══════════════════════════════════════════════════════════╗
+║     DAY 1-3 COMPLETE SETUP — STEP BY STEP GUIDE         ║
+╚══════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — Apne existing project mein yeh files replace karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Yeh files REPLACE karo (copy-paste karo):
+  jwtapp/models.py
+  jwtapp/serializers.py
+  jwtapp/views.py
+  jwtapp/urls.py
+  jwtapp/admin.py
+
+Yeh NAYA folder banao:
+  jwtproject/settings/          ← folder
+  jwtproject/settings/__init__.py
+  jwtproject/settings/base.py
+  jwtproject/settings/development.py
+  jwtproject/settings/production.py
+
+Yeh NAYA folder banao:
+  jwtapp/tests/
+  jwtapp/tests/__init__.py
+  jwtapp/tests/test_api.py
+
+Purani file DELETE karo:
+  jwtproject/settings.py        ← yeh delete karo
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — .env file update karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Apni .env file mein yeh line add karo:
+
+  DJANGO_SETTINGS_MODULE=jwtproject.settings.development
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — Packages install karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pip install whitenoise dj-database-url psycopg2-binary
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — Migration chalao
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  python manage.py makemigrations jwtapp
+  python manage.py migrate
+  python manage.py createsuperuser
+  python manage.py runserver
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — Tests chalao (optional)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  python manage.py test jwtapp.tests
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POORI API ENDPOINTS LIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+AUTH (Day 2):
+  POST   /api/register/               Customer/Vendor register
+  POST   /api/login/                  Login → access + refresh token
+  POST   /api/logout/                 Logout (refresh blacklist)
+  POST   /api/token/refresh/          Naya access token lo
+  POST   /api/email/verify/           OTP se email verify karo
+  POST   /api/email/resend-otp/       OTP dobara bhejo
+  POST   /api/password/reset/         Reset OTP bhejo
+  POST   /api/password/reset/confirm/ Naya password set karo
+  POST   /api/password/change/        Password change (logged in)
+  GET    /api/profile/                Apna profile dekho
+  PATCH  /api/profile/                Profile update karo
+  POST   /api/auth/google/            Google se login
+
+ADDRESSES (Day 1):
+  GET    /api/addresses/                    Saare addresses
+  POST   /api/addresses/                    Naya address
+  GET    /api/addresses/<id>/               Ek address detail
+  PATCH  /api/addresses/<id>/               Update address
+  DELETE /api/addresses/<id>/               Delete address
+  POST   /api/addresses/<id>/set-default/   Default set karo
+
+ACCOUNT (Day 3):
+  POST   /api/account/deactivate/           Account band karo
+
+ADMIN — USERS (Day 3):
+  GET    /api/admin/dashboard/              Overall stats
+  GET    /api/admin/users/                  Sabhi users
+  GET    /api/admin/users/?role=vendor      Filter by role
+  GET    /api/admin/users/?search=name      Search users
+  GET    /api/admin/users/<id>/             User detail
+  PATCH  /api/admin/users/<id>/             User update
+  POST   /api/admin/users/<id>/toggle-active/  Ban/unban
+
+ADMIN — VENDORS (Day 3):
+  GET    /api/admin/vendors/                Sabhi vendors
+  GET    /api/admin/vendors/?approved=false Pending vendors
+  PATCH  /api/admin/vendors/<id>/approve/   Approve/reject vendor
+
+DASHBOARDS:
+  GET    /api/protected/                    Any logged-in user
+  GET    /api/vendor/dashboard/             Vendor only
+
+SWAGGER DOCS:
+  GET    /api/docs/                         Swagger UI
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMON ERRORS & FIXES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Error: "No installed app with label 'jwtapp'"
+Fix:   .env mein DJANGO_SETTINGS_MODULE=jwtproject.settings.development add karo
+
+Error: "No module named 'whitenoise'"
+Fix:   pip install whitenoise
+
+Error: "No module named 'dj_database_url'"
+Fix:   pip install dj-database-url
+
+Error: "relation 'user_addresses' does not exist"
+Fix:   python manage.py makemigrations && python manage.py migrate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NEXT — DAY 4 (Products App)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  python manage.py startapp products
+  Category, Product, ProductImage, ProductVariant models banengi

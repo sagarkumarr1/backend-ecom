@@ -1,0 +1,15 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn jwtproject.wsgi:application --bind 0.0.0.0:$PORT --workers 2"
+healthcheckPath = "/api/schema/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
+
+[[deploy.releaseCommands]]
+command = "python manage.py migrate --no-input"
+
+[[deploy.releaseCommands]]
+command = "python manage.py collectstatic --no-input"

@@ -1,0 +1,114 @@
+╔══════════════════════════════════════════════════════════════╗
+║        DAY 7-12 SETUP — ORDERS, PAYMENTS, REVIEWS           ║
+╚══════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — Install new packages
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  pip install razorpay
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — .env mein Razorpay keys add karo
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  RAZORPAY_KEY_ID=rzp_test_xxxx       ← razorpay.com pe free account banao
+  RAZORPAY_KEY_SECRET=your-secret
+  RAZORPAY_WEBHOOK_SECRET=any-string  ← koi bhi string rakho dev mein
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — Settings mein Razorpay add karo (base.py mein)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  # base.py ke end mein add karo:
+  RAZORPAY_KEY_ID     = os.environ.get('RAZORPAY_KEY_ID', '')
+  RAZORPAY_KEY_SECRET = os.environ.get('RAZORPAY_KEY_SECRET', '')
+  RAZORPAY_WEBHOOK_SECRET = os.environ.get('RAZORPAY_WEBHOOK_SECRET', '')
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — Migrations chalao
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  python manage.py makemigrations orders payments reviews
+  python manage.py migrate
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — Tests chalao
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  python manage.py test orders.tests reviews.tests
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+POORI API ENDPOINTS — DAY 7-12
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+DAY 7 — ORDERS:
+  POST   /api/orders/place/                    Cart se order banao
+  GET    /api/orders/                          Apne orders
+  GET    /api/orders/<order_id>/               Order detail
+  POST   /api/orders/<order_id>/cancel/        Order cancel
+  GET    /api/orders/<order_id>/tracking/      Tracking timeline
+  POST   /api/orders/<order_id>/return/        Return request
+
+  ADMIN:
+  GET    /api/orders/admin/                    Sabhi orders
+  GET    /api/orders/admin/?status=pending     Filter
+  PATCH  /api/orders/admin/<order_id>/status/  Status update
+  GET    /api/orders/admin/returns/            Return requests
+  PATCH  /api/orders/admin/returns/<id>/       Return approve/reject
+
+DAY 8 — PAYMENTS (Razorpay):
+  POST   /api/payments/create/          Razorpay order banao
+  POST   /api/payments/verify/          Payment signature verify
+  POST   /api/payments/webhook/         Razorpay webhook (auto)
+  POST   /api/payments/refund/          Refund initiate (admin)
+  GET    /api/payments/<order_id>/      Payment status
+
+DAY 10 — REVIEWS:
+  GET    /api/reviews/<slug>/           Product reviews + summary
+  POST   /api/reviews/<slug>/           Review likhna
+  GET    /api/reviews/my/               Apne reviews
+  PATCH  /api/reviews/<id>/update/      Review edit
+  DELETE /api/reviews/<id>/update/      Review delete
+  POST   /api/reviews/<id>/vote/        Helpful/Not helpful vote
+
+  ADMIN:
+  GET    /api/reviews/admin/            Sabhi reviews
+  PATCH  /api/reviews/admin/<id>/       Approve/delete
+
+DAY 11-12 — ANALYTICS:
+  GET    /api/admin/analytics/dashboard/      Overall stats
+  GET    /api/admin/analytics/sales/          Revenue chart data
+  GET    /api/admin/analytics/top-products/   Top selling products
+  GET    /api/admin/analytics/low-stock/      Low stock alerts
+  GET    /api/admin/analytics/vendor-revenue/ Vendor-wise revenue
+  GET    /api/admin/analytics/order-status/   Order status pie chart
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RAZORPAY FLOW — Frontend se kaise use karein
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Order place karo       → POST /api/orders/place/
+2. Payment create karo    → POST /api/payments/create/ {"order_id": "ORD-xxx"}
+3. Frontend pe Razorpay modal open karo (razorpay_order_id se)
+4. User pays → Razorpay callback aata hai
+5. Verify karo            → POST /api/payments/verify/ (3 fields bhejo)
+6. Order confirmed!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL PROJECT SUMMARY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Apps:       jwtapp | products | cart | orders | payments | reviews
+Endpoints:  75+ APIs
+Auth:       JWT + Google OAuth + OTP Email Verify
+DB Tables:  20+ tables (PostgreSQL)
+Features:   Customer + Vendor + Admin roles
+            Search + Filter + Sort
+            Cart + Wishlist + Coupons
+            Order lifecycle + Tracking
+            Razorpay payments + Webhooks + Refunds
+            Reviews + Ratings + Helpful votes
+            Admin analytics + Sales reports
+
+Next: Day 13 (Testing) + Day 14 (API Docs) + Day 15 (Deploy)
